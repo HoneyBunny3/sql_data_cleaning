@@ -88,4 +88,3 @@ License
 This project is licensed under the MIT License. See the LICENSE file for details.
 
 Feel free to explore the scripts and adapt them to your datasets. Feedback and contributions are welcome!
-Contact
