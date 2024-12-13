@@ -1,6 +1,10 @@
 # Data Dictionary for Contracts Dataset
 
-This data dictionary describes the fields in the contracts dataset and their intended meanings. Each column in the dataset is documented with a description of its content.
+This data dictionary describes the fields in the contracts dataset and their intended meanings. Each column in the dataset is documented with a description of its content, including derived fields added during data transformation.
+
+---
+
+## **Original Fields**
 
 | **Column Name**                | **Description**                                                                    |
 |--------------------------------|------------------------------------------------------------------------------------|
@@ -33,11 +37,56 @@ This data dictionary describes the fields in the contracts dataset and their int
 | `TODAY`                        | The date when the dataset was generated or updated (format: `YYYY-MM-DD`).         |
 | `ROW_KEY`                      | Unique key for identifying each row in the dataset.                                |
 
-## Notes
-- **Missing Data**: Columns like `CONTRACT_SYNOPSIS` and `ALIAS_NM` have many missing values and may need to be replaced with default placeholders.
-- **Monetary Fields**: Ensure that fields like `MA_PRCH_LMT_AM`, `MA_ITD_ORD_AM`, and `MA_DO_RFED_AM` are validated for positive values.
-- **Date Fields**: Fields like `EFBGN_DT`, `EFEND_DT`, and `BRD_AWD_DT` should be standardized to `YYYY-MM-DD` format for consistency.
+---
 
-## Future Enhancements
-- Add documentation for any derived or calculated fields created during the cleaning or analysis process.
-- Include visual examples of cleaned data fields where applicable.
+## **Derived and Added Fields**
+
+| **Column Name**      | **Description**                                                                 |
+|-----------------------|---------------------------------------------------------------------------------|
+| `contract_size`       | Categorizes contracts as "Minor" (less than $100,000) or "Major" based on `MA_PRCH_LMT_AM`. |
+| `contract_duration`   | Calculates the duration of contracts in days using `EFEND_DT` - `EFBGN_DT`.    |
+| `potential_issue`     | Flags contracts with potential anomalies, such as spending over $10,000,000.   |
+
+---
+
+## **Data Types**
+
+| **Column Name**                | **Data Type**   | **Notes**                                                                 |
+|--------------------------------|-----------------|---------------------------------------------------------------------------|
+| `DOC_CD`                       | VARCHAR(20)     | Text-based code for document types.                                       |
+| `DOC_ID`                       | VARCHAR(50)     | Unique text-based identifier.                                             |
+| `CONTRACT_CONTACT_NM`          | VARCHAR(255)    | Contact names are standardized to uppercase and trimmed.                  |
+| `CONTRACT_CONTACT_VOICE_PH_NO` | VARCHAR(20)     | Phone numbers normalized to `(XXX) XXX-XXXX` format.                      |
+| `MA_PRCH_LMT_AM`               | DECIMAL(15, 2)  | Validated to ensure non-negative values.                                  |
+| `EFBGN_DT`, `EFEND_DT`         | DATE            | Standardized to `YYYY-MM-DD` format. Invalid dates replaced with `1900-01-01`. |
+| `contract_size`                | VARCHAR(10)     | Derived field: "Minor" or "Major."                                        |
+| `contract_duration`            | INT             | Derived field: Duration in days.                                          |
+| `potential_issue`              | BOOLEAN         | Flags contracts with spending anomalies.                                  |
+
+---
+
+## **Validation Rules**
+
+| **Validation Rule**              | **Description**                                                                 |
+|----------------------------------|---------------------------------------------------------------------------------|
+| Null Values                      | Missing values are replaced with default placeholders.                          |
+| Duplicate Rows                   | Removed based on `ROW_KEY` to ensure data uniqueness.                          |
+| Monetary Fields                  | Negative values in `MA_PRCH_LMT_AM` and `MA_ITD_ORD_AM` replaced with `0`.      |
+| Date Fields                      | Standardized to `YYYY-MM-DD` and invalid dates replaced with `1900-01-01`.      |
+| Phone Numbers                    | Normalized to `(XXX) XXX-XXXX` format.                                          |
+| Contract Size Classification     | Categorized as "Minor" or "Major" based on `MA_PRCH_LMT_AM`.                    |
+| Potential Data Issues Flagging   | Contracts with spending > $10,000,000 flagged for manual review.                |
+
+---
+
+## **Future Enhancements**
+- Document and visualize relationships between fields (e.g., foreign key dependencies).
+- Expand with additional derived metrics like average contract value per vendor.
+- Include sample rows of the dataset to showcase cleaned and transformed data.
+
+---
+
+## **Notes**
+- **Missing Data**: Columns like `CONTRACT_SYNOPSIS` and `ALIAS_NM` had missing values that were replaced during cleaning.
+- **Monetary Fields**: Validated to ensure positive values in `MA_PRCH_LMT_AM`, `MA_ITD_ORD_AM`, and `MA_DO_RFED_AM`.
+- **Date Fields**: Validated and standardized to ensure consistency across the dataset.

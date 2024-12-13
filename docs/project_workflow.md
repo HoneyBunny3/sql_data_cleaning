@@ -1,5 +1,17 @@
 # Project Workflow for Contracts Data Cleaning and Transformation
 
+1. **Incorporate Automation**: Reflect the automation script `automated_cleaning_job.sql` and the `clean_and_transform_contracts` procedure into the workflow to showcase automated processes.
+
+2. **Add Logging and Auditing**: Highlight the use of the `audit_logging.sql` script to track changes in the `contracts` table.
+
+3. **Include Indexing and Optimization**: Emphasize performance optimization via `create_indexes.sql` and `performance_optimization.sql`.
+
+4. **Expand Documentation References**: Add the `validation_results_summary.md` and `analysis_report.md` as part of the documentation for reproducibility and reporting.
+
+---
+
+# Project Workflow for Contracts Data Cleaning and Transformation
+
 This document outlines the complete workflow for cleaning, transforming, and analyzing the `contracts` dataset. It includes detailed steps, tools used, and processes followed to prepare the data for meaningful analysis and reporting.
 
 ---
@@ -21,86 +33,28 @@ The goal of this project is to clean and transform the `contracts` dataset from 
   FIELDS TERMINATED BY ',' ENCLOSED BY '"'
   LINES TERMINATED BY '\n'
   IGNORE 1 ROWS;
-
+  ```
 - **Objective**: Ensure the data is loaded into a structured table for further processing.
 
 ---
 
-### **Step 2: Data Cleaning**
-- **Objective**: Remove inconsistencies, duplicates, and missing or invalid data.
+### **Step 2: Automated Cleaning**
+- **Objective**: Automate the cleaning and transformation process to ensure consistency.
 
-#### **Actions Performed**:
-1. **Remove Duplicate Rows**:
-   - Retain unique rows based on the `ROW_KEY` column.
-   ```sql
-   DELETE FROM contracts
-   WHERE ROW_KEY NOT IN (
-       SELECT MIN(ROW_KEY)
-       FROM contracts
-       GROUP BY ROW_KEY
-   );
-   ```
+#### **Script**:
+- Execute the `automated_cleaning_job.sql` script:
+  ```sql
+  CALL clean_and_transform_contracts();
+  ```
 
-2. **Handle Missing Values**:
-   - Replace null values in key columns with default placeholders.
-   ```sql
-   UPDATE contracts
-   SET CONTRACT_SYNOPSIS = 'Not Available'
-   WHERE CONTRACT_SYNOPSIS IS NULL;
-   ```
-
-3. **Standardize Data Formats**:
-   - Convert dates to the `YYYY-MM-DD` format.
-   ```sql
-   UPDATE contracts
-   SET EFBGN_DT = STR_TO_DATE(EFBGN_DT, '%m/%d/%Y');
-   ```
-
-4. **Normalize Text Fields**:
-   - Standardize names to uppercase and trim unnecessary whitespace.
-   ```sql
-   UPDATE contracts
-   SET LGL_NM = UPPER(TRIM(LGL_NM));
-   ```
+- **Benefits**:
+  - Automates duplicate removal, null handling, and standardization.
+  - Enriches data with derived fields such as `contract_size` and `contract_duration`.
 
 ---
 
-### **Step 3: Data Transformation**
-- **Objective**: Enrich the dataset with new columns and prepare it for analysis.
-
-#### **Actions Performed**:
-1. **Add Derived Columns**:
-   - `contract_size`: Categorize contracts as "Minor" or "Major."
-   ```sql
-   ALTER TABLE contracts ADD COLUMN contract_size VARCHAR(10);
-   UPDATE contracts
-   SET contract_size = CASE
-       WHEN MA_PRCH_LMT_AM < 100000 THEN 'Minor'
-       ELSE 'Major'
-   END;
-   ```
-
-   - `contract_duration`: Calculate contract duration in days.
-   ```sql
-   ALTER TABLE contracts ADD COLUMN contract_duration INT;
-   UPDATE contracts
-   SET contract_duration = DATEDIFF(EFEND_DT, EFBGN_DT)
-   WHERE EFBGN_DT IS NOT NULL AND EFEND_DT IS NOT NULL;
-   ```
-
-2. **Flag Potential Data Issues**:
-   - Identify contracts with unusually high spending for manual review.
-   ```sql
-   ALTER TABLE contracts ADD COLUMN potential_issue BOOLEAN DEFAULT FALSE;
-   UPDATE contracts
-   SET potential_issue = TRUE
-   WHERE MA_PRCH_LMT_AM > 10000000;
-   ```
-
----
-
-### **Step 4: Data Validation**
-- **Objective**: Ensure the dataset is clean and ready for analysis.
+### **Step 3: Data Validation**
+- **Objective**: Validate the dataset to ensure it meets quality standards.
 
 #### **Validation Steps**:
 1. **Check for Remaining Null Values**:
@@ -123,7 +77,42 @@ The goal of this project is to clean and transform the `contracts` dataset from 
 
 ---
 
-### **Step 5: Data Analysis**
+### **Step 4: Performance Optimization**
+- **Objective**: Enhance database performance for faster query execution.
+
+#### **Actions Performed**:
+1. **Create Indexes**:
+   ```sql
+   CREATE UNIQUE INDEX idx_row_key ON contracts(ROW_KEY);
+   CREATE INDEX idx_vendor_name ON contracts(LGL_NM);
+   CREATE INDEX idx_efbgn_dt ON contracts(EFBGN_DT);
+   ```
+
+2. **Rebuild Indexes and Gather Statistics**:
+   - Execute the `performance_optimization.sql` script to optimize the database.
+
+---
+
+### **Step 5: Logging and Auditing**
+- **Objective**: Track all changes made to the `contracts` table for traceability.
+
+#### **Actions Performed**:
+1. **Log Changes**:
+   - Use the `audit_logging.sql` script to log details of each transformation.
+   - Example log entry:
+     ```sql
+     INSERT INTO audit_log (action, table_name, details)
+     VALUES ('Cleaned Data', 'contracts', 'Removed duplicates and standardized fields.');
+     ```
+
+2. **Review Logs**:
+   ```sql
+   SELECT * FROM audit_log;
+   ```
+
+---
+
+### **Step 6: Data Analysis**
 - **Objective**: Generate insights and prepare data for reporting.
 
 #### **Actions Performed**:
@@ -154,7 +143,7 @@ The goal of this project is to clean and transform the `contracts` dataset from 
 
 ---
 
-### **Step 6: Data Export**
+### **Step 7: Data Export**
 - **Objective**: Save the cleaned and transformed data for visualization or external analysis.
 
 #### **Export Script**:
@@ -168,36 +157,21 @@ FROM contracts;
 
 ---
 
-### **7. Documentation**
+### **8. Documentation**
 - **Objective**: Ensure all processes are well-documented for reproducibility.
-- **Files**:
-  - `README.md`: Project overview.
-  - `data_dictionary.md`: Description of dataset fields.
-  - `transformation_documentation.md`: Details of cleaning and transformation steps.
+
+#### **Key Documents**:
+1. `README.md`: Project overview.
+2. `transformation_documentation.md`: Details of cleaning and transformation steps.
+3. `validation_results_summary.md`: Summary of validation outcomes.
+4. `analysis_report.md`: Insights and metrics derived from the cleaned dataset.
 
 ---
 
 ## **Tools and Technologies**
 - **Database**: MySQL
-- **Scripting Language**: SQL
-- **Visualization**: Tableau, Power BI (optional)
+- **Scripting Language**: SQL, PL/SQL
+- **Visualization**: Tableau, Power BI
 - **Other Tools**: Python (for optional data manipulation)
 
 ---
-
-## **8. Next Steps**
-1. Use the cleaned data to build dashboards in Tableau or Power BI.
-2. Automate the cleaning and transformation process for recurring updates.
-3. Enhance the analysis with additional insights, such as outlier detection or trend forecasting.
-
----
-
-This workflow ensures a robust, end-to-end process for preparing the `contracts` dataset for analysis. Follow the steps sequentially to replicate the results or adapt them to your specific needs.
-
----
-
-### **How to Use This File**
-1. Save this as `docs/project_workflow.md` in your repository.
-2. Use it as a step-by-step guide to ensure all parts of your project are executed consistently.
-3. Update it as needed when you refine or expand the project.
-***
