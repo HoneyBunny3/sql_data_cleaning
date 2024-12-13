@@ -5,6 +5,17 @@ This project includes a suite of SQL scripts to clean, validate, enhance, and an
 
 ---
 
+## Execution Workflow
+
+ - Initial Setup: archive_original_data.sql
+ - Cleaning: clean_and_standardize_data.sql
+ - Transformation: clean_and_enhance_contracts.sql
+ - Validation: validate_transformed_data.sql
+ - Optimization: create_indexes.sql, performance_optimization.sql
+ - Backup and Export: backup_cleaned_data.sql, export_cleaned_data.sql
+ - Analysis: analysis_queries.sql
+
+---
 ## Script Descriptions
 
 ### Data Transformation
@@ -35,7 +46,7 @@ This project includes a suite of SQL scripts to clean, validate, enhance, and an
 ---
 
 ## How to Use
-1. Clone the repository and navigate to the `sql` folder.
+1. Clone the repository and navigate to the `scripts` folder.
 2. Follow the execution instructions in each script.
 3. Run the scripts in sequence or as needed based on your requirements.
 
