@@ -34,8 +34,9 @@ This report summarizes the key insights generated from the cleaned and transform
 ## 4. Contract Durations
 - **Description**: Calculates the average duration of contracts in days.
 - **Key Insight**:
-  - Average contract duration: 365 days.
+  - Average contract duration: 1 year (365 days).
   - Longest contract duration: 5 years.
+  - Note: Duration calculated using `DATEDIFF(end_date, start_date)`.
 
 ---
 
@@ -56,3 +57,29 @@ The analysis provides actionable insights into contract spending, vendor perform
 1. **Integrate** this dataset with a reporting tool (e.g., Power BI or Tableau) to create interactive dashboards.
 2. **Investigate** flagged contracts for potential issues or anomalies.
 3. **Enhance** the analysis with predictive models to forecast spending trends.
+
+---
+
+## Cleaning Process Summary
+1. **Duplicate Removal**: Removed 235 duplicate records.
+2. **Standardization**: Ensured date formats comply with `YYYY-MM-DD`.
+3. **Error Correction**: Fixed 42 cases of missing `employee_id`.
+
+---
+
+## Post-Cleaning Metrics
+| Metric               | Value               |
+|----------------------|---------------------|
+| Total Records        | 4,765              |
+| Missing Values       | 0                  |
+| Average Contract     | 1 year (365 days)  |
+| Contracts Expiring   | 523 (11%)          |
+
+---
+
+## Example Insights
+| Metric              | Value       |
+|---------------------|-------------|
+| Total Employees     | 4,765       |
+| Average Contract    | 1 year      |
+| Contracts Expiring  | 523 (11%)   |
