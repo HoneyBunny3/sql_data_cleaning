@@ -1,0 +1,56 @@
+# Logs
+*.log
+
+# Temporary files
+*.tmp
+*.swp
+
+# System files
+.DS_Store
+Thumbs.db
+
+
+# Python bytecode (if using Python scripts for data processing)
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# SQL-related files
+*.sql.bak
+*.sql~  # Temporary backup files
+*.out   # Output files
+
+# Credentials and sensitive configuration files
+.env
+db_credentials.json
+config.yml
+
+# MySQL dump files (if you generate exports)
+*.sql.dump
+*.sql.gz
+
+
+# # CSV and data exports (important for my portfolio and this is plublicly available sample data, not confidential)
+# /exported_data/
+# *.csv
+# *.tsv
+
+# Compiled files (if applicable)
+*.o
+*.so
+*.dll
+
+# Node.js dependencies (if used for visualization tools)
+node_modules/
+npm-debug.log*
+
+# VS Code workspace files
+.vscode/
+*.code-workspace
+
+# JetBrains IDEs (like PyCharm, IntelliJ, etc.)
+.idea/
+
+# Other ignored directories
+/temp/
